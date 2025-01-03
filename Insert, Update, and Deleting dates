@@ -1,0 +1,85 @@
+*& Developed By : Ragu..
+*& Descripition : Inserting, updating, and deleting values/Datas form Database table via source code...
+
+
+TYPES: BEGIN OF ty_tab,
+    cus_id TYPE z001-cus_id,
+    cus_name TYPE z001-cus_name,
+    cus_age TYPE z001-cus_age,
+    cus_gender TYPE z001-cus_gender,
+    cus_mob_num TYPE z001-cus_mob_num,
+    cus_address TYPE z001-cus_address,
+    cus_pincode TYPE z001-cus_pincode,
+    cus_country TYPE z001-cus_country,
+  END OF ty_tab.
+
+DATA: wa TYPE ty_tab,
+      it TYPE TABLE OF ty_tab.
+
+" Get Inputs via parameters....
+SELECTION-SCREEN BEGIN OF BLOCK A WITH FRAME TITLE t_001.
+PARAMETERS: p_id TYPE z001-cus_id,
+            p_name TYPE z001-cus_name,
+            p_mob TYPE z001-cus_mob_num.
+SELECTION-SCREEN END OF BLOCK A.
+
+SELECTION-SCREEN BEGIN OF BLOCK B WITH FRAME TITLE t_002.
+PARAMETERS: p_age TYPE z001-cus_age,
+            p_gender TYPE z001-cus_gender,
+            p_address TYPE z001-cus_address,
+            p_pincode TYPE z001-cus_pincode,
+            p_country TYPE z001-cus_country.
+SELECTION-SCREEN END OF BLOCK B.
+
+" Here which action do you want...
+SELECTION-SCREEN BEGIN OF BLOCK C WITH FRAME TITLE t_003.
+PARAMETERS: new_b RADIOBUTTON GROUP rb1,
+            edit_b RADIOBUTTON GROUP rb1,
+            delete_b RADIOBUTTON GROUP rb1.
+SELECTION-SCREEN END OF BLOCK C.
+
+" Here input values/ datas storing temporary.....
+INITIALIZATION.
+wa-cus_id = p_id.
+wa-cus_name = p_name.
+wa-cus_mob_num = p_mob.
+wa-cus_age = p_age.
+wa-cus_gender = p_gender.
+wa-cus_address = p_address.
+wa-cus_pincode = p_pincode.
+wa-cus_country = p_country.
+
+" Move values from work area to internal.....
+CLEAR it.
+APPEND wa TO it.
+
+START-OF-SELECTION.
+" Here check the conditions.....
+IF new_b EQ 'X'.
+  INSERT z001 FROM TABLE it.
+  IF sy-subrc = 0.
+    MESSAGE 'Data inserted successfully' TYPE 'S'.
+  ELSE.
+    MESSAGE 'Insert failed' TYPE 'E'.
+  ENDIF.
+ENDIF.
+
+IF edit_b EQ 'X'.
+  MODIFY z001 FROM TABLE it.
+  IF sy-subrc = 0.
+    MESSAGE 'Data updated successfully' TYPE 'S'.
+  ELSE.
+    MESSAGE 'Update failed' TYPE 'E'.
+  ENDIF.
+ENDIF.
+
+IF delete_b EQ 'X'.
+  DELETE FROM z001 WHERE cus_id = wa-cus_id AND
+                        cus_name = wa-cus_name AND
+                        cus_mob_num = wa-cus_mob_num.
+  IF sy-subrc = 0.
+    MESSAGE 'Data deleted successfully' TYPE 'S'.
+  ELSE.
+    MESSAGE 'Delete failed' TYPE 'E'.
+  ENDIF.
+ENDIF.
