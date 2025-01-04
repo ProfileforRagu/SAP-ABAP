@@ -1,0 +1,28 @@
+
+*& Developed By : Ragu
+*& Description : Inner join tables.
+
+TYPES: BEGIN OF ty,
+  vbeln TYPE vbak-vbeln,
+  kunnr TYPE vbak-kunnr,
+  vbtyp TYPE vbak-vbtyp,
+  posnr TYPE vbap-posnr,
+  matnr TYPE vbap-matnr,
+  netwr TYPE vbap-netwr,
+  name1 TYPE kna1-name1,
+END OF ty.
+
+data : wa TYPE ty,
+      it TYPE table of ty.
+
+select-OPTIONS s_vbeln FOR wa-vbeln.
+
+
+SELECT k~vbeln k~kunnr k~vbtyp p~posnr p~matnr p~netwr a~name1
+  from vbak as k INNER JOIN vbap as p on k~vbeln = p~vbeln
+  INNER JOIN kna1 as a on k~kunnr = a~kunnr
+  INTO TABLE it where k~vbeln in s_vbeln.
+
+  LOOP at it into wa.
+    write : / wa-vbeln, wa-kunnr, wa-vbtyp, wa-posnr, wa-matnr, wa-netwr, wa-name1.
+  ENDLOOP.
