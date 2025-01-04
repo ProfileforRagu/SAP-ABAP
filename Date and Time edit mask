@@ -1,0 +1,9 @@
+"Date and Time edit mask....
+DATA: lv_date TYPE sy-datum , " Current date
+      lv_time TYPE sy-uzeit. " Current time
+
+lv_date = sy-datum .
+lv_time = sy-uzeit.
+
+WRITE: /(10) lv_date USING EDIT MASK '__-__-____',
+       /(8) lv_time USING EDIT MASK '__/__/__'.
