@@ -1,1 +1,103 @@
-hi
+*&---------------------------------------------------------------------*
+*& Developed By : Ragu
+*& description : For all entries.
+*&---------------------------------------------------------------------*
+REPORT zforallentries.
+
+TYPES: BEGIN OF ty_mkpf,
+         mblnr TYPE mkpf-mblnr,
+         mjahr TYPE mkpf-mjahr,
+         blart TYPE mkpf-blart,
+         budat TYPE mkpf-budat,
+       END OF ty_mkpf,
+
+       BEGIN OF ty_mseg,
+         mblnr TYPE mseg-mblnr,
+         mjahr TYPE mseg-mjahr,
+         zeile TYPE mseg-zeile,
+         bwart TYPE mseg-bwart,
+         matnr TYPE mseg-matnr,
+         werks TYPE mseg-werks,
+       END OF ty_mseg,
+
+       BEGIN OF ty_makt,
+         matnr TYPE makt-matnr,
+         maktx TYPE makt-maktx,
+         spras TYPE makt-spras,
+       END OF ty_makt,
+
+       BEGIN OF ty_final,
+         mblnr TYPE mkpf-mblnr,
+         mjahr TYPE mkpf-mjahr,
+         blart TYPE mkpf-blart,
+         budat TYPE mkpf-budat,
+         zeile TYPE mseg-zeile,
+         bwart TYPE mseg-bwart,
+         matnr TYPE mseg-matnr,
+         werks TYPE mseg-werks,
+         maktx TYPE makt-maktx,
+         spras TYPE makt-spras,
+       END OF ty_final.
+
+
+
+DATA: wa_mkpf  TYPE ty_mkpf,
+      wa_mseg  TYPE ty_mseg,
+      wa_makt  TYPE ty_makt,
+      wa_final TYPE ty_final,
+      it_mkpf  TYPE TABLE OF ty_mkpf,
+      it_mseg  TYPE TABLE OF ty_mseg,
+      it_makt  TYPE TABLE OF ty_makt,
+      it_final TYPE TABLE OF ty_final.
+
+
+
+SELECT-OPTIONS s_mblnr FOR wa_mkpf-mblnr.
+PARAMETERS p_mjahr TYPE mkpf-mjahr.
+
+SELECT mblnr mjahr blart budat FROM mkpf INTO TABLE it_mkpf
+  WHERE mblnr IN s_mblnr AND mjahr = p_mjahr.
+
+IF sy-subrc = 0.
+  SELECT mblnr mjahr zeile bwart matnr werks FROM mseg INTO TABLE it_mseg
+    FOR ALL ENTRIES IN it_mkpf
+    WHERE mblnr = it_mkpf-mblnr AND mjahr = it_mkpf-mjahr.
+ENDIF.
+
+
+IF sy-subrc = 0.
+  SELECT matnr maktx spras FROM makt INTO TABLE it_makt
+    FOR ALL ENTRIES IN it_mseg
+    WHERE matnr = it_mseg-matnr.
+ENDIF.
+
+WRITE : 2 'mblnr', 17 'mjahr', 23 'blart', 28 'budat', 39 'zeile', 44 'bwart', 50 'matnr', 92 'werks', 98 'maktx', 140 'spras'.
+
+
+LOOP AT it_mkpf INTO wa_mkpf.
+  wa_final-mblnr = wa_mkpf-mblnr.
+  wa_final-mjahr = wa_mkpf-mjahr.
+  wa_final-blart = wa_mkpf-blart.
+  wa_final-budat = wa_mkpf-budat.
+
+  READ TABLE it_mseg INTO wa_mseg
+   WITH KEY mblnr = wa_mkpf-mblnr  mjahr = wa_mkpf-mjahr.
+  IF sy-subrc = 0.
+    wa_final-zeile = wa_mseg-zeile.
+    wa_final-bwart = wa_mseg-bwart.
+    wa_final-matnr = wa_mseg-matnr.
+    wa_final-werks = wa_mseg-werks.
+  ENDIF.
+
+  READ TABLE it_makt INTO wa_makt
+     WITH KEY matnr = wa_mseg-matnr.
+  IF sy-subrc = 0.
+    wa_final-maktx = wa_makt-maktx.
+    wa_final-spras = wa_final-spras.
+
+  ENDIF.
+  APPEND wa_final TO it_final.
+  CLEAR : wa_mkpf, wa_mseg, wa_makt.
+
+  WRITE : /2 wa_final-mblnr,17 wa_final-mjahr,23 wa_final-blart,28 wa_final-budat,39 wa_final-zeile,44 wa_final-bwart,50 wa_final-matnr,92 wa_final-werks, 98 wa_final-maktx,140 wa_final-spras.
+ENDLOOP.
