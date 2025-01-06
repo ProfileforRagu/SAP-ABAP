@@ -53,8 +53,16 @@ DATA: wa_mkpf  TYPE ty_mkpf,
 
 
 SELECT-OPTIONS s_mblnr FOR wa_mkpf-mblnr.
-PARAMETERS p_mjahr TYPE mkpf-mjahr.
+PARAMETERS p_mjahr TYPE mkpf-mjahr DEFAULT '2024'.
 
+INITIALIZATION.
+     s_mblnr-low = '4900000000'.
+     s_mblnr-high = '4900000030'.
+     s_mblnr-sign = 'I'.
+     s_mblnr-option = 'BT'.
+     APPEND s_mblnr.
+
+AT SELECTION-SCREEN.
 SELECT mblnr mjahr blart budat FROM mkpf INTO TABLE it_mkpf
   WHERE mblnr IN s_mblnr AND mjahr = p_mjahr.
 
@@ -71,9 +79,10 @@ IF sy-subrc = 0.
     WHERE matnr = it_mseg-matnr.
 ENDIF.
 
+TOP-OF-PAGE.
 WRITE : 2 'mblnr', 17 'mjahr', 23 'blart', 28 'budat', 39 'zeile', 44 'bwart', 50 'matnr', 92 'werks', 98 'maktx', 140 'spras'.
 
-
+START-OF-SELECTION.
 LOOP AT it_mkpf INTO wa_mkpf.
   wa_final-mblnr = wa_mkpf-mblnr.
   wa_final-mjahr = wa_mkpf-mjahr.
@@ -101,3 +110,6 @@ LOOP AT it_mkpf INTO wa_mkpf.
 
   WRITE : /2 wa_final-mblnr,17 wa_final-mjahr,23 wa_final-blart,28 wa_final-budat,39 wa_final-zeile,44 wa_final-bwart,50 wa_final-matnr,92 wa_final-werks, 98 wa_final-maktx,140 wa_final-spras.
 ENDLOOP.
+END-OF-PAGE.
+   WRITE :/ 'Page is ended'.
+END-OF-SELECTION.
