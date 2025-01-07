@@ -1,0 +1,25 @@
+
+INCLUDE zinclude.
+
+
+PERFORM datas USING  'BCDE' '26' 'MALE' 'INDIA' .
+PERFORM datas USING  'ABCD' '28' 'FEMALE' 'INDIA' .
+PERFORM datas USING  'CDEF' '27' 'MALE' 'INDIA' .
+
+
+LOOP  AT it_Z INTO wa_Z.
+  WRITE :/ wa_Z-name,wa_Z-age,wa_Z-gender ,wa_Z-country.
+ENDLOOP.
+
+FORM datas USING VALUE(p0001)
+                 VALUE(p0002)
+                 VALUE(p0003)
+                 VALUE(p0004).
+
+  wa_Z-name  = p0001.
+  wa_Z-age = p0002.
+  wa_Z-gender = p0003.
+  wa_Z-country = p0004.
+  APPEND wa_Z TO it_Z.
+  CLEAR WA_Z.
+ENDFORM.
