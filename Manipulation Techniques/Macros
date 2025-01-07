@@ -16,3 +16,13 @@ macros1 'CDEF' '27' 'MALE' 'INDIA'.
 LOOP  AT it_z INTO wa_z.
   WRITE :/ wa_z-name,wa_z-age,wa_z-gender ,wa_z-country.
 ENDLOOP.
+
+
+
+" Here getting input via parameter.................................................. 
+* PARAMETERS: name TYPE z001-name,
+*            age TYPE z001-age,
+*            gender TYPE z001-gender,
+*            country TYPE z001-country.
+*
+* macros1 name age gender country.
