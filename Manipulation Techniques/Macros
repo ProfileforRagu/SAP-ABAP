@@ -1,0 +1,18 @@
+INCLUDE zinclude.
+
+DEFINE macros1.
+  wa_z-name  = &1.
+  wa_z-age = &2.
+  wa_z-gender = &3.
+  wa_z-country = &4.
+  APPEND wa_z TO it_z.
+  CLEAR wa_z.
+end-of-DEFINITION.
+
+macros1 'BCDE' '26' 'MALE' 'INDIA'.
+macros1 'ABCD' '28' 'FEMALE' 'INDIA'.
+macros1 'CDEF' '27' 'MALE' 'INDIA'.
+
+LOOP  AT it_z INTO wa_z.
+  WRITE :/ wa_z-name,wa_z-age,wa_z-gender ,wa_z-country.
+ENDLOOP.
