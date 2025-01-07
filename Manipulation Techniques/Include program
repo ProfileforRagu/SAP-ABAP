@@ -1,0 +1,9 @@
+TYPES: BEGIN OF ty_z001,
+         name    TYPE z001-name,
+         age     TYPE z001-age,
+         gender  TYPE z001-gender,
+         country TYPE z001-country,
+       END OF ty_z001.
+
+DATA : wa_z TYPE ty_z001,
+       it_z TYPE TABLE OF ty_z001.
