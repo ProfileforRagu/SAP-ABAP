@@ -1,0 +1,29 @@
+*&  Source code tab.
+*"---------------------------------------------------------------------
+*"  IMPORTING
+*"     REFERENCE(I_EBELN) TYPE  EBELN
+*"  EXPORTING
+*"     REFERENCE(WA_P1) TYPE  ZSTRU2
+*"----------------------------------------------------------------------
+include ZINCLUDE_02.
+
+SELECT SINGLE ebeln
+              bstyp
+              bsart
+              lifnr
+  FROM ekko INTO wa_p1 WHERE ebeln = i_ebeln.
+
+ENDFUNCTION.
+
+
+
+*" ----------------------------------------------------------------------------------------------------------
+*& Tables
+*" -----------------------------------------------------------------------------------------------------------
+*& Import Tab.
+    Parameter Name  |  Typing     |   Associated Type  |  Default Value     |    Description / short text
+    I_EBELN         |  Type       |      EBELN         |                    |    Purchesing document number
+*" ----------------------------------------------------------------------------------------------------------
+*& Export Tab. 
+   WA_P1  |  TYPE  | ZSTRU2    |
+*" ---------------------------------------------------------------------------------------------------------
