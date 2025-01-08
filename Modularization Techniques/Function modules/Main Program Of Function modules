@@ -1,0 +1,12 @@
+include ZINCLUDE_02.
+
+PARAMETERS p_ebeln TYPE ekko-ebeln.
+
+CALL FUNCTION 'ZCALLFM_02'
+  EXPORTING
+    i_ebeln       = p_ebeln
+ IMPORTING
+   WA_P1         = wa_p.
+
+
+WRITE:/ wa_p-ebeln,wa_p-bstyp,wa_p-bsart, wa_p-lifnr.
