@@ -1,0 +1,15 @@
+TYPES: BEGIN OF ty_lfb1,
+         lifnr TYPE lfb1-lifnr,
+         bukrs TYPE lfb1-bukrs,
+         pernr TYPE lfb1-pernr,
+       END OF ty_lfb1.
+
+DATA: wa TYPE ty_lfb1.
+
+PARAMETERS p_lifnr TYPE lfb1-lifnr.
+
+
+SELECT SINGLE lifnr bukrs pernr FROM lfb1 INTO wa
+ WHERE lifnr = p_lifnr.
+
+WRITE :/ wa-lifnr, wa-bukrs, wa-pernr.
