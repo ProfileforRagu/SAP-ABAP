@@ -25,5 +25,6 @@ ENDFUNCTION.
     I_EBELN         |  Type       |      EBELN         |                    |    Purchesing document number
 *" ----------------------------------------------------------------------------------------------------------
 *& Export Tab. 
-   WA_P1  |  TYPE  | ZSTRU2    |
+   Parameter Name  |  Typing     |   Associated Type  |  Default Value     |    Description / short text
+   WA_P1           |  TYPE       | ZSTRU2             |
 *" ---------------------------------------------------------------------------------------------------------
