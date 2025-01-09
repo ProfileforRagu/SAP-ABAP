@@ -1,0 +1,9 @@
+TYPES: BEGIN OF ty,
+         ebeln TYPE ekko-ebeln,
+         bstyp TYPE ekko-bstyp,
+         bsart TYPE ekko-bsart,
+         lifnr TYPE ekko-lifnr,
+       END OF ty.
+
+DATA : wa_p TYPE ty,
+      it_p type table of ty.
