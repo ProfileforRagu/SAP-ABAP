@@ -1,0 +1,59 @@
+
+*&---------------------------------------------------------------------*
+*& Report Z11012025
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT z11012025.
+
+INCLUDE z11012025_inc.
+
+SELECTION-SCREEN BEGIN OF BLOCK a WITH FRAME TITLE t-001.
+  SELECT-OPTIONS s_vbeln FOR wa_k-vbeln.
+SELECTION-SCREEN END OF BLOCK a.
+
+*INITIALIZATION.
+*  s_vbeln-low = 0017100001.
+*  s_vbeln-high = 0017100014.
+*  s_vbeln-option = 'bw'.
+*  s_vbeln-sign = 'I'.
+
+CALL FUNCTION 'ZCALLFM_05'
+  TABLES
+    inp_vbeln       = s_vbeln
+    it_vbak         = it_k
+    it_vbap         = it_p
+ EXCEPTIONS
+   NO_DATA         = 1
+   DATA            = 2
+   CHECK           = 3
+   OTHERS          = 4.
+
+
+  IF sy-subrc = 1.
+    MESSAGE 'Invalid data / no datas found from your input box.' TYPE 'E' DISPLAY LIKE 'E'.
+  ELSEIF sy-subrc = 2.
+    MESSAGE 'Datas inserted successfully.' TYPE 'S' DISPLAY LIKE 'S'.
+
+    LOOP AT it_k INTO wa_k.
+      wa_f-vbeln = wa_k-vbeln.
+      wa_f-erdat = wa_k-erdat.
+      wa_f-ernam = wa_k-ernam.
+      wa_f-kunnr = wa_k-kunnr.
+
+      READ TABLE it_p INTO wa_p WITH KEY vbeln = wa_k-vbeln.
+      IF sy-subrc EQ 0.
+        wa_f-posnr = wa_p-posnr.
+        wa_f-matnr = wa_p-matnr.
+        wa_f-matwa = wa_p-matwa.
+      ENDIF.
+      APPEND wa_f TO it_f.
+      clear : wa_k,wa_p,wa_f.
+    ENDLOOP.
+
+    loop at it_f into wa_f.
+      WRITE : / wa_f-vbeln, wa_f-erdat,wa_f-ernam,wa_f-kunnr,wa_f-posnr, wa_f-matnr, wa_f-matwa.
+      ENDLOOP.
+  ELSE.
+    MESSAGE 'Check your entries.' TYPE 'A' DISPLAY LIKE 'A'.
+  ENDIF.
