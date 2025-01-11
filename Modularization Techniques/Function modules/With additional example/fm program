@@ -1,0 +1,39 @@
+FUNCTION zcallfm_05.
+*"----------------------------------------------------------------------
+*"*"Local Interface:
+*"  TABLES
+*"      INP_VBELN STRUCTURE  ZVBELN
+*"      IT_VBAK STRUCTURE  ZVBAKFM
+*"      IT_VBAP STRUCTURE  ZVBAPFM
+*"  EXCEPTIONS
+*"      NO_DATA
+*"      DATA
+*"      CHECK
+*"----------------------------------------------------------------------
+  INCLUDE z11012025_inc.
+
+
+  SELECT  vbeln
+          erdat
+          ernam
+          kunnr FROM vbak
+    INTO TABLE it_vbak WHERE vbeln IN inp_vbeln.
+
+  IF it_vbak[] IS NOT INITIAL.
+    SELECT vbeln
+           posnr
+           matnr
+           matwa FROM vbap
+      INTO TABLE it_vbap FOR ALL ENTRIES IN it_vbak
+      WHERE vbeln = it_vbak-vbeln.
+  ENDIF.
+
+  IF it_vbak[] IS INITIAL.
+    RAISE no_data.
+  ELSEIF it_vbak[] IS NOT INITIAL.
+    RAISE data.
+  ELSE.
+    RAISE check.
+  ENDIF.
+
+ENDFUNCTION.
