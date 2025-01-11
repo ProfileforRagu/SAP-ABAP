@@ -1,0 +1,30 @@
+TYPES: BEGIN OF ty_vbak,
+         vbeln TYPE vbak-vbeln,
+         erdat TYPE vbak-erdat,
+         ernam TYPE vbak-ernam,
+         kunnr TYPE vbak-kunnr,
+       END OF ty_vbak,
+
+       BEGIN OF ty_vbap,
+         vbeln TYPE  vbap-vbeln,
+         posnr TYPE vbap-posnr,
+         matnr TYPE vbap-matnr,
+         matwa TYPE vbap-matwa,
+       END OF ty_vbap,
+
+       BEGIN OF ty_final,
+         vbeln TYPE vbak-vbeln,
+         erdat TYPE vbak-erdat,
+         ernam TYPE vbak-ernam,
+         kunnr TYPE vbak-kunnr,
+         posnr TYPE vbap-posnr,
+         matnr TYPE vbap-matnr,
+         matwa TYPE vbap-matwa,
+       END OF ty_final.
+
+DATA : wa_k TYPE ty_vbak,
+       it_k TYPE TABLE OF ty_vbak,
+       wa_p TYPE ty_vbap,
+       it_p TYPE TABLE OF ty_vbap,
+       wa_f TYPE ty_final,
+       it_f TYPE TABLE OF ty_final.
