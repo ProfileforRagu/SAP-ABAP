@@ -1,0 +1,9 @@
+*&---------------------------------------------------------------------*
+*& Include          ZINC_INTRACTIVE_SEL_SCR
+*&---------------------------------------------------------------------*
+
+ SELECTION-SCREEN BEGIN OF BLOCK a WITH FRAME TITLE TEXT-001.
+
+    SELECT-OPTIONS s_vbeln FOR vbak-vbeln.
+
+  SELECTION-SCREEN END OF BLOCK a.
