@@ -1,0 +1,34 @@
+*&---------------------------------------------------------------------*
+*& Include          ZINC_INTRACTIVE
+*&---------------------------------------------------------------------*
+tables: vbap,vbak.
+
+types : BEGIN OF ty_vbak,
+  vbeln TYPE vbak-vbeln,
+  audat TYPE vbak-audat,
+  kunnr TYPE vbak-kunnr,
+  vbtyp TYPE vbak-vbtyp,
+  END OF ty_vbak,
+
+  BEGIN OF ty_vbap,
+    vbeln type vbap-vbeln,
+    posnr TYPE vbap-posnr,
+    matnr TYPE vbap-matnr,
+    werks TYPE vbap-werks,
+    kwmeng TYPE vbap-kwmeng,
+    netwr TYPE vbap-netwr,
+    END OF ty_vbap,
+
+    BEGIN OF ty_mara,
+      matnr TYPE mara-matnr,
+      matkl TYPE mara-matkl,
+      zeinr TYPE mara-zeinr,
+      mtart TYPE mara-mtart,
+      END OF ty_mara.
+
+data : wa_vbak TYPE ty_vbak,
+        wa_vbap TYPE ty_vbap,
+        wa_mara TYPE ty_mara,
+        it_vbak TYPE TABLE of ty_vbak,
+        it_vbap TYPE TABLE of ty_vbap,
+        it_mara TYPE TABLE of ty_mara.
