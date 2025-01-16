@@ -1,0 +1,58 @@
+SELECTION-SCREEN BEGIN OF BLOCK a WITH FRAME TITLE TEXT-001.
+  PARAMETERS: p_name TYPE char10 MODIF ID f,
+              p_age  TYPE int3  MODIF ID f.
+SELECTION-SCREEN END OF BLOCK a.
+
+SELECTION-SCREEN BEGIN OF BLOCK c WITH FRAME TITLE TEXT-003.
+  PARAMETERS: p_city TYPE char10 MODIF ID D,
+              p_pin  TYPE int8  MODIF ID D.
+SELECTION-SCREEN END OF BLOCK c.
+
+SELECTION-SCREEN BEGIN OF BLOCK b WITH FRAME TITLE TEXT-002.
+  PARAMETERS p_name1 RADIOBUTTON GROUP V USER-COMMAND UC.
+  PARAMETERS p_city1 RADIOBUTTON GROUP V DEFAULT 'X'.
+SELECTION-SCREEN END OF BLOCK b.
+
+
+
+AT SELECTION-SCREEN OUTPUT.
+PERFORM modifing.
+
+
+*&---------------------------------------------------------------------*
+*& Form modifing
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM modifing.
+  IF p_name1 = 'X'.
+    LOOP AT SCREEN.
+      IF screen-group1 = 'F'.
+*        screen-active = 1.
+        screen-input = 1.
+        MODIFY SCREEN.
+        CLEAR screen.
+      ELSEIF screen-group1 = 'D'.
+        screen-input = 0.
+        MODIFY SCREEN.
+        CLEAR screen.
+      ENDIF.
+    ENDLOOP.
+    ELSEIF p_city1 = 'X'.
+       LOOP AT SCREEN.
+      IF screen-group1 = 'D'.
+*        screen-active = 1.
+        screen-input = 1.
+        MODIFY SCREEN.
+        CLEAR screen.
+      ELSEIF screen-group1 = 'F'.
+        screen-input = 0.
+        MODIFY SCREEN.
+        CLEAR screen.
+      ENDIF.
+    ENDLOOP.
+    ENDIF.
+ENDFORM.
