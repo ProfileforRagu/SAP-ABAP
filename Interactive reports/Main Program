@@ -1,0 +1,39 @@
+REPORT "z1601" NO STANDARD PAGE HEADING.
+INCLUDE: zinc_intractive,
+          zinc_intractive_sel_scr,
+          zinc_intractive_fetch.
+
+
+INITIALIZATION.
+  PERFORM s_vbeln_init.        
+
+AT SELECTION-SCREEN.
+  PERFORM validate_s_vbeln.
+
+
+START-OF-SELECTION.
+  PERFORM get_vbak.
+
+END-OF-SELECTION.
+
+  PERFORM dis_data.
+
+TOP-OF-PAGE.
+  PERFORM vbak_header.
+
+AT LINE-SELECTION.
+  IF sy-lsind = 1.
+    PERFORM get_vbap.
+    PERFORM dis_vbap.
+    ELSEIF sy-lsind = 2.
+      PERFORM get_mara.
+      PERFORM dis_mara.
+  ENDIF.
+
+TOP-OF-PAGE DURING LINE-SELECTION.
+
+   IF sy-lsind = 1.
+    write : / 'sales item information'.
+    ELSEIF sy-lsind = 2.
+     WRITE : / 'Meterial item information'.
+  ENDIF.
