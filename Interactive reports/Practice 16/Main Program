@@ -1,0 +1,34 @@
+*&---------------------------------------------------------------------*
+*& Report ZPRACTICE16
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zpractice16 NO STANDARD PAGE HEADING.
+
+INCLUDE: zinc_int_dec,
+         zinc_int_sel_scr,
+         zinc_int_fetch.
+
+
+AT SELECTION-SCREEN.
+  PERFORM verify_input.
+
+START-OF-SELECTION.
+
+PERFORM validate_datas.
+
+END-OF-SELECTION.
+
+  PERFORM dis_data_vbak_and_ekpo.
+
+AT SELECTION-SCREEN OUTPUT.
+  PERFORM screen_output.
+
+AT LINE-SELECTION.
+  PERFORM out_contition.
+
+TOP-OF-PAGE.
+PERFORM topofpage_classical.
+
+TOP-OF-PAGE DURING LINE-SELECTION.
+  PERFORM top_of_page_line_sel.
