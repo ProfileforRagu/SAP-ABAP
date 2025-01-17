@@ -1,0 +1,376 @@
+*&---------------------------------------------------------------------*
+*& Include          ZINC_INT_FETCH
+*&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
+*& Form verify_input
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM verify_input .
+  SELECT SINGLE vbeln FROM vbak INTO iv_vbeln WHERE vbeln IN s_vbeln.
+  IF sy-subrc NE 0.
+    MESSAGE 'Please enter your valid data' TYPE 'I' DISPLAY LIKE 'E'.
+  ENDIF.
+
+  SELECT SINGLE ebeln FROM ekpo INTO iv_ebeln WHERE ebeln IN s_ebeln.
+  IF sy-subrc NE 0.
+    MESSAGE 'Please enter your valid data' TYPE 'I' DISPLAY LIKE 'E'.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form validate_datas
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM validate_datas1 .
+  " Table 1 =  VBAK, VBAP, MAKT, MARA.
+  SELECT vbeln
+         audat
+         vbtyp
+         netwr
+         kunnr
+         waerk FROM vbak INTO TABLE it_vbak WHERE vbeln IN s_vbeln.
+
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form validate_datas2
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM validate_datas2 .
+  " Table 2 = EKPO, EKKO, T001.
+
+  SELECT ebeln
+         ebelp
+         matnr
+         bukrs
+         werks FROM ekpo INTO TABLE it_ekpo WHERE ebeln IN s_ebeln.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form dis_data_vbak
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM dis_data_vbak_and_ekpo.
+
+  IF it_vbak IS NOT INITIAL.
+    LOOP AT it_vbak INTO wa_vbak.
+      WRITE : / wa_vbak-vbeln, wa_vbak-audat,wa_vbak-vbtyp,wa_vbak-netwr,wa_vbak-kunnr,wa_vbak-waerk.
+      HIDE :  wa_vbak-vbeln, wa_vbak-audat,wa_vbak-vbtyp,wa_vbak-netwr,wa_vbak-kunnr,wa_vbak-waerk.
+    ENDLOOP.
+  ENDIF.
+
+  IF it_ekpo IS NOT INITIAL.
+    LOOP AT it_ekpo INTO wa_ekpo.
+      WRITE : / wa_ekpo-ebeln, wa_ekpo-ebelp, wa_ekpo-matnr, wa_ekpo-bukrs, wa_ekpo-werks.
+      HIDE : wa_ekpo-ebeln, wa_ekpo-ebelp, wa_ekpo-matnr, wa_ekpo-bukrs, wa_ekpo-werks.
+    ENDLOOP.
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form screen_output
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM screen_output .
+  IF p_vbeln = 'X'.
+    LOOP AT SCREEN.
+      IF screen-group1 = 'A'.
+        screen-active = 1.
+        screen-input = 1 .
+        MODIFY SCREEN.
+        CLEAR screen.
+      ELSEIF screen-group1 = 'B'.
+        screen-active = 0.
+        screen-input = 0.
+        screen-invisible = 0.
+        MODIFY SCREEN.
+        CLEAR screen.
+      ENDIF.
+    ENDLOOP.
+  ELSEIF p_ebeln = 'X'.
+    LOOP AT SCREEN.
+      IF screen-group1 = 'B'.
+        screen-active = 1.
+        screen-input = 1 .
+        MODIFY SCREEN.
+        CLEAR screen.
+      ELSEIF screen-group1 = 'A'.
+        screen-active = 0.
+        screen-input = 0 .
+        screen-invisible = 0.
+        MODIFY SCREEN.
+        CLEAR screen.
+      ENDIF.
+    ENDLOOP.
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form out_contition
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM out_contition .
+
+  IF p_vbeln = 'X'.
+    IF sy-lsind = 1 .
+      PERFORM selecr_vbap.
+      PERFORM get_vbap.
+
+    ELSEIF sy-lsind = 2.
+      PERFORM select_makt.
+      PERFORM get_makt.
+
+    ELSEIF sy-lsind = 3.
+      PERFORM select_mara.
+      PERFORM get_mara.
+    ENDIF.
+  ENDIF.
+
+  IF p_ebeln = 'X'.
+    IF sy-lsind = 1.
+      PERFORM select_ekko.
+      PERFORM get_ekko.
+
+    ELSEIF sy-lsind = 2.
+      PERFORM select_t001.
+      PERFORM get_t001.
+    ENDIF.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form selecr_vbap
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM selecr_vbap .
+
+  IF it_vbak IS NOT INITIAL.
+    SELECT vbeln posnr matnr kwmeng netwr werks FROM vbap INTO TABLE it_vbap  WHERE vbeln = wa_vbak-vbeln.
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form get_vbap
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM get_vbap .
+
+  LOOP AT it_vbap INTO wa_vbap.
+    WRITE : / wa_vbap-vbeln,wa_vbap-posnr,wa_vbap-matnr,wa_vbap-kwmeng,wa_vbap-netwr,wa_vbap-werks.
+    HIDE : wa_vbap-vbeln,wa_vbap-posnr,wa_vbap-matnr,wa_vbap-kwmeng,wa_vbap-netwr,wa_vbap-werks.
+  ENDLOOP.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form select_makt
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM select_makt .
+
+  IF it_vbap IS NOT INITIAL.
+    SELECT matnr spras maktx maktg FROM makt INTO TABLE it_makt  WHERE matnr = wa_vbap-matnr.
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form get_makt
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM get_makt .
+
+  LOOP AT it_makt INTO wa_makt.
+    WRITE : / wa_makt-matnr, wa_makt-spras, wa_makt-maktx, wa_makt-maktg.
+    HIDE : wa_makt-matnr, wa_makt-spras, wa_makt-maktx, wa_makt-maktg.
+  ENDLOOP.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form select_mara
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM select_mara .
+
+  IF it_makt IS NOT INITIAL.
+    SELECT matnr mtart mbrsh wrkst bwscl FROM mara INTO TABLE it_mara  WHERE matnr = wa_makt-matnr.
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form get_mara
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM get_mara .
+
+  LOOP AT it_mara INTO wa_mara.
+    WRITE : / wa_mara-matnr, wa_mara-mtart, wa_mara-mbrsh, wa_mara-wrkst, wa_mara-bwscl.
+    HIDE : wa_mara-matnr, wa_mara-mtart, wa_mara-mbrsh, wa_mara-wrkst, wa_mara-bwscl.
+  ENDLOOP.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form select_ekko
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM select_ekko .
+
+  IF it_ekpo IS NOT INITIAL.
+    SELECT ebeln bukrs statu pincr kunnr FROM ekko INTO TABLE it_ekko  WHERE ebeln = wa_ekpo-ebeln.
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form get_ekko
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM get_ekko .
+  LOOP AT it_ekko INTO wa_ekko.
+    WRITE :/ wa_ekko-ebeln, wa_ekko-bukrs, wa_ekko-statu, wa_ekko-pincr, wa_ekko-kunnr.
+    HIDE : wa_ekko-ebeln, wa_ekko-bukrs, wa_ekko-statu, wa_ekko-pincr, wa_ekko-kunnr.
+  ENDLOOP.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form select_t001
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM select_t001 .
+
+  IF it_ekko IS NOT INITIAL.
+    SELECT  bukrs butxt waers xtemplt FROM t001 INTO TABLE it_t001 WHERE bukrs = wa_ekko-bukrs.
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form get_t001
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM get_t001 .
+
+  LOOP AT it_t001 INTO wa_t001.
+    WRITE :/ wa_t001-bukrs, wa_t001-butxt, wa_t001-waers, wa_t001-xtemplt.
+    HIDE : wa_t001-bukrs, wa_t001-butxt, wa_t001-waers, wa_t001-xtemplt.
+  ENDLOOP.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form top_of_page_line_sel
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM top_of_page_line_sel .
+  IF p_vbeln = 'X'.
+    IF  sy-lsind = 1.
+      WRITE : / 'This is VBAP table'.
+      ULINE.
+    ELSEIF sy-lsind = 2.
+      WRITE : / 'This is MAKT table'.
+      ULINE.
+    ELSEIF sy-lsind = 3.
+      WRITE : / 'This is MARA table'.
+      ULINE.
+    ENDIF.
+  ELSEIF p_ebeln = 'X'.
+    IF  sy-lsind = 1.
+      WRITE : / 'This is EKKO table'.
+      ULINE.
+    ELSEIF sy-lsind = 2.
+      WRITE : / 'This is T001 table'.
+      ULINE.
+    ENDIF.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form topofpage_classical
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM topofpage_classical .
+  IF p_vbeln = 'X'.
+    WRITE : / 'This is VBAK table'.
+    ULINE.
+  ELSEIF p_ebeln = 'X'.
+    WRITE : / 'This is EKPO table'.
+    ULINE.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form validate_datas
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*& -->  p1        text
+*& <--  p2        text
+*&---------------------------------------------------------------------*
+FORM validate_datas .
+  IF  p_vbeln = 'X'.
+    PERFORM validate_datas1.
+  ELSEIF p_ebeln = 'X'.
+    PERFORM validate_datas2.
+  ENDIF.
+ENDFORM.
