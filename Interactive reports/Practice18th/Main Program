@@ -1,0 +1,48 @@
+*&---------------------------------------------------------------------*
+*& Report ZPRACTICE18
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zpractice18 NO STANDARD PAGE HEADING.
+INCLUDE zinc_int_dec.
+INCLUDE zinc_int_sel_scr.
+INCLUDE zinc_int_fetch_data.
+
+AT SELECTION-SCREEN.
+  PERFORM input_validate.
+
+
+START-OF-SELECTION.
+
+  PERFORM sel_valid_data.
+
+END-OF-SELECTION.
+
+  PERFORM dis_vbak_or_ekpo.
+
+
+AT LINE-SELECTION.
+  PERFORM final.
+
+TOP-OF-PAGE.
+  PERFORM topofpage.
+  SET PF-STATUS 'BUTTON'.
+
+AT USER-COMMAND.
+  CALL FUNCTION 'DOWNLOAD'
+    EXPORTING
+      filetype = 'DAT'
+    TABLES
+      data_tab = it_vbak.
+
+  IF sy-subrc <> 0.
+    MESSAGE ' This value can not downlaod.' TYPE 'I' DISPLAY LIKE 'E'.
+  ENDIF.
+
+
+TOP-OF-PAGE DURING LINE-SELECTION.
+  PERFORM topdl-s.
+
+
+AT SELECTION-SCREEN OUTPUT.
+  PERFORM input_validate_screen.
