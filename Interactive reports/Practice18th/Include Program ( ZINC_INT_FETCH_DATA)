@@ -1,0 +1,350 @@
+*&---------------------------------------------------------------------*
+*& Include          ZINC_INT_FETCH_DATA
+*&---------------------------------------------------------------------*
+
+
+
+
+*&---------------------------------------------------------------------*
+*& Form input_validate
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+FORM input_validate .
+  IF sy-subrc EQ 0.
+    SELECT SINGLE vbeln FROM vbak INTO iv_vbeln WHERE vbeln IN s_vbeln.
+    IF sy-subrc NE 0.
+      MESSAGE 'Please enter valid data(s).' TYPE 'I' DISPLAY LIKE 'E'.
+    ENDIF.
+
+    SELECT SINGLE ebeln FROM ekpo INTO iv_ebeln WHERE ebeln IN s_ebeln.
+    IF sy-subrc NE 0.
+      MESSAGE 'Please enter valid data(s).' TYPE 'I' DISPLAY LIKE 'E'.
+    ENDIF.
+    CLEAR iv_vbeln.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form get_vbak
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+FORM get_vbak.
+  " Table 1
+  SELECT vbeln audat vbtyp netwr kunnr waerk FROM vbak INTO TABLE it_vbak WHERE vbeln IN s_vbeln.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form get_ekpo
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+FORM get_ekpo.
+  " Table 1
+  SELECT ebeln ebelp matnr bukrs werks FROM ekpo INTO TABLE it_ekpo WHERE ebeln IN s_ebeln.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form sel_valid_data
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+FORM sel_valid_data .
+  IF p_vbeln = 'X'.
+    PERFORM get_vbak.
+  ELSEIF p_ebeln = 'X'.
+    PERFORM get_ekpo.
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form dis_vbak_or_ekpo
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+FORM dis_vbak_or_ekpo .
+
+
+  IF p_vbeln = 'X'.
+
+    LOOP AT it_vbak INTO wa_vbak.
+      WRITE : / wa_vbak-vbeln, wa_vbak-audat, wa_vbak-kunnr.
+    ENDLOOP.
+
+  ELSEIF p_ebeln = 'X'.
+
+    LOOP AT it_ekpo INTO wa_ekpo.
+      WRITE : / wa_ekpo-ebeln, wa_ekpo-ebelp, wa_ekpo-matnr, wa_ekpo-bukrs, wa_ekpo-werks.
+    ENDLOOP.
+
+  ENDIF.
+
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form GET_VBAP_OR_MAKT_OR_MARA
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+FORM get_vbap_or_makt_or_mara .
+
+
+  IF iv1 = 'WA_VBAK-VBELN'.
+    IF it_vbak IS NOT INITIAL.
+      CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+        EXPORTING
+          input  = iv2
+        IMPORTING
+          output = iv_vbeln.
+
+      SELECT vbeln posnr matnr kwmeng netwr waerk FROM vbap INTO TABLE it_vbap WHERE  vbeln = iv_vbeln.
+      LOOP AT it_vbap INTO wa_vbap.
+        WRITE : / wa_vbap-vbeln,wa_vbap-posnr, wa_vbap-matnr.
+      ENDLOOP.
+    ENDIF.
+  ELSEIF iv1 = 'WA_VBAK-KUNNR'.
+    IF it_vbak IS NOT INITIAL.
+      CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+        EXPORTING
+          input  = iv2
+        IMPORTING
+          output = iv_kn.
+      SELECT kunnr name1 ort01 land1 FROM kna1 INTO TABLE it_kna1 WHERE kunnr = iv_kn.
+      LOOP AT it_kna1 INTO wa_kna1.
+        WRITE : / wa_kna1-kunnr,wa_kna1-name1,wa_kna1-ort01,wa_kna1-land1.
+      ENDLOOP.
+    ENDIF.
+
+  ENDIF.
+
+  IF  iv1 = 'WA_VBAP-MATNR'.
+    IF it_vbap IS NOT INITIAL.
+      CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+        EXPORTING
+          input  = iv2
+        IMPORTING
+          output = iv_matnr.
+
+      SELECT matnr spras maktx maktg FROM makt INTO TABLE it_makt WHERE matnr = iv_matnr.
+      LOOP AT it_makt INTO wa_makt.
+        WRITE : / wa_makt-matnr, wa_makt-spras,wa_makt-maktx.
+      ENDLOOP.
+    ENDIF.
+  ELSEIF iv1 ='WA_MAKT-MATNR'.
+    IF it_makt IS NOT INITIAL.
+      CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+        EXPORTING
+          input  = iv2
+        IMPORTING
+          output = iv_matnr.
+
+      SELECT matnr mtart mbrsh bwscl FROM mara INTO  TABLE it_mara WHERE matnr = iv_matnr.
+      LOOP AT it_mara INTO wa_mara.
+        WRITE : / wa_mara-matnr, wa_mara-mtart,wa_mara-bwscl.
+      ENDLOOP.
+    ENDIF.
+
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form GET_EKPO_OR_EKKO_OR_T001
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+FORM get_ekpo_or_ekko_or_t001 .
+  IF p_ebeln = 'X'.
+    IF iv1 = 'WA_EKPO-EBELN'.
+      IF it_ekpo IS NOT INITIAL.
+        CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+          EXPORTING
+            input  = iv2
+          IMPORTING
+            output = iv_ebeln.
+
+        SELECT ebeln bukrs statu pincr kunnr FROM ekko INTO TABLE it_ekko WHERE ebeln = iv_ebeln.
+        LOOP AT it_ekko INTO wa_ekko.
+          WRITE :/ wa_ekko-ebeln, wa_ekko-bukrs, wa_ekko-statu, wa_ekko-pincr,wa_ekko-kunnr.
+        ENDLOOP.
+
+      ENDIF.
+    ELSEIF iv1 = 'WA_EKKO-BUKRS'.
+      IF it_ekko IS NOT INITIAL.
+        CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
+          EXPORTING
+            input  = iv2
+          IMPORTING
+            output = iv_bukrs.
+
+        SELECT bukrs butxt waers xtemplt FROM t001 INTO TABLE it_t001 WHERE bukrs = iv_bukrs.
+        LOOP AT it_t001 INTO wa_t001.
+          WRITE : / wa_t001-bukrs, wa_t001-butxt, wa_t001-waers, wa_t001-xtemplt.
+        ENDLOOP.
+      ENDIF.
+    ENDIF.
+
+  ENDIF.
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form final
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+FORM final .
+  GET CURSOR VALUE iv2 FIELD iv1.
+  IF p_vbeln = 'X'.
+    IF sy-lsind = 1.
+      IF iv1 = 'WA_VBAK-VBELN'.
+        PERFORM get_vbap_or_makt_or_mara.
+      ELSEIF iv1 = 'WA_VBAK-KUNNR'.
+
+        set PARAMETER ID 'KUN' FIELD iv2.
+        CALL TRANSACTION 'XD03' AND SKIP FIRST SCREEN.
+
+*        PERFORM get_vbap_or_makt_or_mara.
+      ENDIF.
+    ELSEIF sy-lsind = 2.
+      IF iv1 = 'WA_VBAP-MATNR'.
+        PERFORM get_vbap_or_makt_or_mara.
+      ENDIF.
+    ELSEIF sy-lsind = 3.
+      IF iv1 = 'WA_MAKT-MATNR'.
+        PERFORM get_vbap_or_makt_or_mara.
+      ENDIF.
+    ENDIF.
+  ELSEIF p_ebeln = 'X'.
+    IF sy-lsind = 1.
+      IF iv1 = 'WA_EKPO-EBELN'.
+        PERFORM get_ekpo_or_ekko_or_t001.
+      ENDIF.
+    ELSEIF sy-lsind = 2.
+      IF iv1 = 'WA_EKKO-BUKRS'.
+        PERFORM get_ekpo_or_ekko_or_t001.
+      ENDIF.
+    ENDIF.
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form topofpage
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+FORM topofpage .
+
+  IF p_vbeln = 'X'.
+    WRITE :/ 'This is VBAK table.', 250 'Page No : 1'.
+    ULINE.
+  ELSEIF p_ebeln = 'X'.
+    WRITE :/ 'This is EKPO table.', 250 'Page No : 1'.
+    ULINE.
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form topdl-s
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+FORM topdl-s .
+
+  IF p_vbeln = 'X'.
+    IF sy-lsind = 1.
+      IF iv1 = 'WA_VBAK-VBELN'.
+        WRITE :/ 'This is VBAP table.', 250 'Page No : 2'.
+        ULINE.
+      ELSEIF iv1 = 'WA_VBAK-KUNNR'.
+        WRITE :/ 'This is KNA1 table.', 250 'Page No : 2'.
+        ULINE.
+      ENDIF.
+    ELSEIF sy-lsind = 2.
+      WRITE :/ 'This is MAKT table.', 250 'Page No : 3'.
+      ULINE.
+    ELSEIF sy-lsind = 3.
+      WRITE :/ 'This is MARA table.', 250 'Page No : 4'.
+      ULINE.
+    ENDIF.
+  ELSEIF p_ebeln = 'X'.
+    IF sy-lsind = 1.
+      WRITE :/ 'This is EKKO table.', 250 'Page No : 2'.
+      ULINE.
+    ELSEIF sy-lsind = 2.
+      WRITE :/ 'This is T001 table.', 250 'Page No : 3'.
+      ULINE.
+    ENDIF.
+  ENDIF.
+
+
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form input_validate_screen
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+FORM input_validate_screen .
+
+  IF p_vbeln = 'X'.
+    LOOP AT SCREEN.
+      IF screen-group1 = 'A'.
+        screen-input = 1.
+        screen-active = 1.
+        MODIFY SCREEN.
+        CLEAR screen.
+      ELSEIF screen-group1 = 'B'.
+        screen-input = 0.
+        screen-active = 0.
+        MODIFY SCREEN.
+        CLEAR screen.
+      ENDIF.
+    ENDLOOP.
+  ELSEIF p_ebeln = 'X'.
+    LOOP AT SCREEN.
+      IF screen-group1 = 'B'.
+        screen-input = 1.
+        screen-active = 1.
+        MODIFY SCREEN.
+        CLEAR screen.
+      ELSEIF screen-group1 = 'A'.
+        screen-input = 0.
+        screen-active = 0.
+        MODIFY SCREEN.
+        CLEAR screen.
+      ENDIF.
+    ENDLOOP.
+  ENDIF.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form Button
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+
+*FORM button .
+*  SET PF-STATUS 'BUTTON'.
+*  IF sy-ucomm = 'DOWNLOAD'.
+*    CALL FUNCTION 'DOWNLOAD'
+*      EXPORTING
+*        filetype = 'DAT'
+*      TABLES
+*        data_tab = it_vbak.
+*
+*    IF sy-subrc <> 0.
+*      MESSAGE ' This value can not downlaod.' TYPE 'I' DISPLAY LIKE 'E'.
+*    ENDIF.
+*
+*
+*  ENDIF.
+*
+*ENDFORM.
