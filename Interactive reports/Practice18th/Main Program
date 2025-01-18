@@ -24,21 +24,8 @@ END-OF-SELECTION.
 AT LINE-SELECTION.
   PERFORM final.
 
-TOP-OF-PAGE.
-  PERFORM topofpage.
-  SET PF-STATUS 'BUTTON'.
 
-AT USER-COMMAND.
-  CALL FUNCTION 'DOWNLOAD'
-    EXPORTING
-      filetype = 'DAT'
-    TABLES
-      data_tab = it_vbak.
-
-  IF sy-subrc <> 0.
-    MESSAGE ' This value can not downlaod.' TYPE 'I' DISPLAY LIKE 'E'.
-  ENDIF.
-
+*PERFORM Button.
 
 TOP-OF-PAGE DURING LINE-SELECTION.
   PERFORM topdl-s.
