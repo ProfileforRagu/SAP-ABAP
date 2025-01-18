@@ -1,0 +1,98 @@
+*&---------------------------------------------------------------------*
+*& Include          ZINC_INT_DEC
+*&---------------------------------------------------------------------*
+
+TABLES : vbak,vbap,makt,mara,
+         ekpo,ekko,t001.
+
+
+TYPES : BEGIN OF ty_vbak,
+          vbeln TYPE vbak-vbeln,
+          audat TYPE vbak-audat,
+          vbtyp TYPE vbak-vbtyp,
+          netwr TYPE vbak-netwr,
+          kunnr TYPE vbak-kunnr,
+          waerk TYPE vbak-waerk,
+        END OF ty_vbak,
+
+        BEGIN OF ty_vbap,
+          vbeln  TYPE vbap-vbeln,
+          posnr  TYPE vbap-posnr,
+          matnr  TYPE vbap-matnr,
+          kwmeng TYPE vbap-kwmeng,
+          netwr  TYPE vbap-netwr,
+          werks  TYPE vbap-werks,
+        END OF ty_vbap,
+
+        BEGIN OF ty_makt,
+          matnr TYPE makt-matnr,
+          spras TYPE makt-spras,
+          maktx TYPE makt-maktx,
+          maktg TYPE makt-maktg,
+        END OF ty_makt,
+
+        BEGIN OF ty_mara,
+          matnr TYPE mara-matnr,
+          mtart TYPE mara-mtart,
+          mbrsh TYPE mara-mbrsh,
+          wrkst TYPE mara-wrkst,
+          bwscl TYPE mara-bwscl,
+        END OF ty_mara,
+
+        BEGIN OF ty_ekpo,
+          ebeln TYPE ekpo-ebeln,
+          ebelp TYPE ekpo-ebelp,
+          matnr TYPE ekpo-matnr,
+          bukrs TYPE ekpo-bukrs,
+          werks TYPE ekpo-werks,
+        END OF ty_ekpo,
+
+        BEGIN OF ty_ekko,
+          ebeln TYPE ekko-ebeln,
+          bukrs TYPE ekko-bukrs,
+          statu TYPE ekko-statu,
+          pincr TYPE ekko-pincr,
+          kunnr TYPE ekko-kunnr,
+        END OF ty_ekko,
+
+        BEGIN OF ty_t001,
+          bukrs   TYPE t001-bukrs,
+          butxt   TYPE t001-butxt,
+          waers   TYPE t001-waers,
+          xtemplt TYPE t001-xtemplt,
+        END OF ty_t001,
+
+        BEGIN OF ty_kna1,
+          kunnr TYPE kna1-kunnr,
+          name1 TYPE kna1-name1,
+          ort01 TYPE kna1-ort01,
+          land1 TYPE kna1-land1,
+        END OF ty_kna1.
+
+
+
+DATA : wa_vbak  TYPE ty_vbak,
+       wa_vbap  TYPE ty_vbap,
+       wa_makt  TYPE ty_makt,
+       wa_mara  TYPE ty_mara,
+       wa_ekpo  TYPE ty_ekpo,
+       wa_ekko  TYPE ty_ekko,
+       wa_t001  TYPE ty_t001,
+       wa_kna1  TYPE ty_kna1,
+       it_vbak  TYPE TABLE OF ty_vbak,
+       it_vbap  TYPE TABLE OF ty_vbap,
+       it_makt  TYPE TABLE OF ty_makt,
+       it_mara  TYPE TABLE OF ty_mara,
+       it_ekpo  TYPE TABLE OF ty_ekpo,
+       it_ekko  TYPE TABLE OF ty_ekko,
+       it_t001  TYPE TABLE OF ty_t001,
+       it_kna1  TYPE TABLE OF ty_kna1,
+       iv_vbeln TYPE vbak-vbeln,
+       iv_ebeln TYPE ekpo-ebeln,
+       iv_matnr TYPE vbap-matnr,
+       iv_bukrs TYPE ekko-bukrs,
+       iv_kn    TYPE kna1-kunnr.
+
+
+DATA: iv2 TYPE char10,
+      iv1 TYPE char30.
