@@ -1,0 +1,32 @@
+*&---------------------------------------------------------------------*
+*& Include          ZINC_INT_SEL_SCR
+*&---------------------------------------------------------------------*
+
+
+SELECTION-SCREEN BEGIN OF BLOCK A WITH FRAME TITLE text-001.
+
+  select-OPTIONS S_vbeln for vbak-vbeln MODIF ID A.
+
+  SELECTION-SCREEN END OF BLOCK A.
+
+
+
+
+
+
+  SELECTION-SCREEN BEGIN OF BLOCK B WITH FRAME TITLE text-002.
+
+  select-OPTIONS S_Ebeln for ekpo-Ebeln MODIF ID B.
+
+  SELECTION-SCREEN END OF BLOCK B.
+
+
+
+
+
+  SELECTION-SCREEN BEGIN OF BLOCK C WITH FRAME TITLE text-003.
+
+    PARAMETERS : P_Vbeln RADIOBUTTON GROUP S USER-COMMAND UC,
+                 P_ebeln RADIOBUTTON GROUP S DEFAULT 'X'.
+
+  SELECTION-SCREEN END OF BLOCK C.
