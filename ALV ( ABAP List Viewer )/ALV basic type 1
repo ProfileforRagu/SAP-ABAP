@@ -1,0 +1,87 @@
+*&---------------------------------------------------------------------*
+*& Report ZALVC1
+*&---------------------------------------------------------------------*
+
+REPORT zalvc1.
+
+TABLES ekpo.
+TYPE-POOLS slis.
+
+TYPES : BEGIN OF ty_ekpo,
+          ebeln TYPE ekpo-ebeln,
+          ebelp TYPE ekpo-ebelp,
+          matnr TYPE ekpo-matnr,
+          bukrs TYPE ekpo-bukrs,
+          werks TYPE ekpo-werks,
+        END OF ty_ekpo.
+
+
+
+
+
+DATA : it_ekpo TYPE TABLE OF ty_ekpo,
+       wa_ekpo TYPE ty_ekpo,
+       it_fcat TYPE slis_t_fieldcat_alv,
+       wa_fcat LIKE LINE OF it_fcat.
+
+
+
+SELECTION-SCREEN BEGIN OF BLOCK a WITH FRAME TITLE TEXT-001.
+  SELECT-OPTIONS s_ebeln FOR ekpo-ebeln.
+SELECTION-SCREEN END OF BLOCK a.
+
+SELECT ebeln
+       ebelp
+       matnr
+       bukrs
+       werks FROM ekpo INTO TABLE it_ekpo WHERE ebeln IN s_ebeln.
+
+
+START-OF-SELECTION.
+
+wa_fcat-fieldname = 'EBELN'.
+wa_fcat-col_pos = '1'.
+wa_fcat-seltext_m = 'Purchasing order'.
+APPEND wa_fcat TO it_fcat.
+CLEAR wa_fcat.
+
+wa_fcat-fieldname = 'EBELP'.
+wa_fcat-col_pos = '2'.
+wa_fcat-seltext_m = 'Item'.
+APPEND wa_fcat TO it_fcat.
+CLEAR wa_fcat.
+
+wa_fcat-fieldname = 'MATNR'.
+wa_fcat-col_pos = '3'.
+wa_fcat-seltext_m = 'Material master'.
+APPEND wa_fcat TO it_fcat.
+CLEAR wa_fcat.
+
+wa_fcat-fieldname = 'BUKRS'.
+wa_fcat-col_pos = '4'.
+wa_fcat-seltext_m = 'Company code'.
+APPEND wa_fcat TO it_fcat.
+CLEAR wa_fcat.
+
+wa_fcat-fieldname = 'WERKS'.
+wa_fcat-col_pos = '5'.
+wa_fcat-seltext_m = 'Plant'.
+APPEND wa_fcat TO it_fcat.
+CLEAR wa_fcat.
+
+end-of-SELECTION.
+
+
+
+CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+  EXPORTING
+    i_callback_program = sy-cprog
+    it_fieldcat        = it_fcat
+  TABLES
+    t_outtab           = it_ekpo
+  EXCEPTIONS
+    program_error      = 1
+    OTHERS             = 2.
+IF sy-subrc <> 0.
+* Implement suitable error handling here
+ENDIF.
