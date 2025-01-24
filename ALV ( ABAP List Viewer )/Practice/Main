@@ -1,0 +1,23 @@
+*&---------------------------------------------------------------------*
+*& Report ZALV4
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zalv4.
+
+INCLUDE: zinc_alv_declaration, zinc_alv_sel_screen, zinc_alv_fetch_data.
+
+AT SELECTION-SCREEN.
+  PERFORM verify_data.
+
+AT SELECTION-SCREEN OUTPUT.
+  PERFORM sele_scr_output.
+
+START-OF-SELECTION.
+
+  PERFORM get_tab_data.
+  PERFORM get_headers.
+  PERFORM get_events.
+
+END-OF-SELECTION.
+  PERFORM display_datas.
