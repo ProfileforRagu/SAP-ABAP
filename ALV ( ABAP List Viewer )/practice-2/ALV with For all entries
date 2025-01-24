@@ -1,0 +1,227 @@
+*&---------------------------------------------------------------------*
+*& Report ZALV5
+*&---------------------------------------------------------------------*
+*&
+*&---------------------------------------------------------------------*
+REPORT zalv5.
+
+TABLES: vbak,vbap,makt.
+TYPE-POOLS : slis_t_fieldcat_alv.
+
+TYPES : BEGIN OF ty_vbak,
+          vbeln TYPE vbak-vbeln,
+          audat TYPE vbak-audat,
+          vbtyp TYPE vbak-vbtyp,
+          kunnr TYPE vbak-kunnr,
+          waerk TYPE vbak-waerk,
+        END OF ty_vbak,
+
+        BEGIN OF ty_vbap,
+          vbeln  TYPE vbap-vbeln,
+          posnr  TYPE vbap-posnr,
+          matnr  TYPE vbap-matnr,
+          kwmeng TYPE vbap-kwmeng,
+          netwr  TYPE vbap-netwr,
+          werks  TYPE vbap-werks,
+        END OF ty_vbap,
+
+        BEGIN OF ty_makt,
+          matnr TYPE makt-matnr,
+          spras TYPE makt-spras,
+          maktx TYPE makt-maktx,
+          maktg TYPE makt-maktg,
+        END OF ty_makt,
+
+        BEGIN OF ty_final,
+          vbeln  TYPE vbak-vbeln,
+          audat  TYPE vbak-audat,
+          vbtyp  TYPE vbak-vbtyp,
+          kunnr  TYPE vbak-kunnr,
+          waerk  TYPE vbak-waerk,
+          posnr  TYPE vbap-posnr,
+          matnr  TYPE vbap-matnr,
+          kwmeng TYPE vbap-kwmeng,
+          netwr  TYPE vbap-netwr,
+          werks  TYPE vbap-werks,
+          spras  TYPE makt-spras,
+          maktx  TYPE makt-maktx,
+          maktg  TYPE makt-maktg,
+        END OF ty_final.
+
+DATA : wa_vbak       TYPE ty_vbak,
+       wa_vbap       TYPE ty_vbap,
+       wa_makt       TYPE ty_makt,
+       wa_final      TYPE ty_final,
+       it_vbak       TYPE TABLE OF ty_vbak,
+       it_vbap       TYPE TABLE OF ty_vbap,
+       it_makt       TYPE TABLE OF ty_makt,
+       it_final      TYPE TABLE OF ty_final,
+
+       it_fcat_final TYPE slis_t_fieldcat_alv,
+       wa_fcat_final LIKE LINE OF it_fcat_final.
+
+
+SELECT-OPTIONS s_vbeln FOR vbak-vbeln.
+
+
+AT SELECTION-SCREEN.
+
+  SELECT vbeln
+         audat
+         vbtyp
+         kunnr
+         waerk FROM vbak
+    INTO TABLE it_vbak WHERE vbeln IN s_vbeln.
+
+START-OF-SELECTION.
+
+  IF it_vbak IS NOT INITIAL.
+    SELECT  vbeln
+            posnr
+            matnr
+            kwmeng
+            netwr
+            werks FROM vbap
+      INTO TABLE it_vbap FOR ALL ENTRIES IN it_vbak WHERE vbeln = it_vbak-vbeln.
+
+  ENDIF.
+
+  IF it_vbap IS NOT INITIAL.
+
+    SELECT  matnr
+            spras
+            maktx
+            maktg FROM makt
+    INTO TABLE it_makt FOR ALL ENTRIES IN it_vbap WHERE matnr = it_vbap-matnr.
+
+  ENDIF.
+
+  SORT: it_vbap BY vbeln,
+         it_makt BY matnr.
+
+  LOOP AT it_vbak INTO wa_vbak.
+    wa_final-vbeln = wa_vbak-vbeln.
+    wa_final-audat = wa_vbak-audat.
+    wa_final-vbtyp = wa_vbak-vbtyp.
+    wa_final-kunnr = wa_vbak-kunnr.
+    wa_final-waerk = wa_vbak-waerk.
+
+
+    READ TABLE it_vbap INTO wa_vbap WITH KEY vbeln = wa_vbak-vbeln BINARY SEARCH.
+    IF sy-subrc = 0.
+      wa_final-posnr = wa_vbap-posnr.
+      wa_final-matnr = wa_vbap-matnr.
+      wa_final-kwmeng = wa_vbap-kwmeng.
+      wa_final-netwr = wa_vbap-netwr.
+      wa_final-werks = wa_vbap-werks.
+    ENDIF.
+
+    READ TABLE it_makt INTO wa_makt WITH KEY matnr = wa_vbap-matnr BINARY SEARCH.
+    IF sy-subrc = 0.
+      wa_final-spras = wa_makt-spras.
+      wa_final-maktx = wa_makt-maktx.
+      wa_final-maktg = wa_makt-maktg.
+    ENDIF.
+    APPEND wa_final TO it_final.
+    CLEAR: wa_vbak,wa_vbap,wa_makt,wa_final.
+
+  ENDLOOP.
+
+  PERFORM headings.
+
+END-OF-SELECTION.
+
+  CALL FUNCTION 'REUSE_ALV_GRID_DISPLAY'
+    EXPORTING
+*     I_INTERFACE_CHECK  = ' '
+*     I_BYPASSING_BUFFER = ' '
+*     I_BUFFER_ACTIVE    = ' '
+      i_callback_program = sy-cprog
+*     I_CALLBACK_PF_STATUS_SET          = ' '
+*     I_CALLBACK_USER_COMMAND           = ' '
+*     I_CALLBACK_TOP_OF_PAGE            = ' '
+*     I_CALLBACK_HTML_TOP_OF_PAGE       = ' '
+*     I_CALLBACK_HTML_END_OF_LIST       = ' '
+*     I_STRUCTURE_NAME   =
+*     I_BACKGROUND_ID    = ' '
+*     I_GRID_TITLE       =
+*     I_GRID_SETTINGS    =
+*     IS_LAYOUT          =
+      it_fieldcat        = it_fcat_final
+*     IT_EXCLUDING       =
+*     IT_SPECIAL_GROUPS  =
+*     IT_SORT            =
+*     IT_FILTER          =
+*     IS_SEL_HIDE        =
+*     I_DEFAULT          = 'X'
+*     I_SAVE             = ' '
+*     IS_VARIANT         =
+*     IT_EVENTS          =
+*     IT_EVENT_EXIT      =
+*     IS_PRINT           =
+*     IS_REPREP_ID       =
+*     I_SCREEN_START_COLUMN             = 0
+*     I_SCREEN_START_LINE               = 0
+*     I_SCREEN_END_COLUMN               = 0
+*     I_SCREEN_END_LINE  = 0
+*     I_HTML_HEIGHT_TOP  = 0
+*     I_HTML_HEIGHT_END  = 0
+*     IT_ALV_GRAPHICS    =
+*     IT_HYPERLINK       =
+*     IT_ADD_FIELDCAT    =
+*     IT_EXCEPT_QINFO    =
+*     IR_SALV_FULLSCREEN_ADAPTER        =
+*     O_PREVIOUS_SRAL_HANDLER           =
+*     O_COMMON_HUB       =
+* IMPORTING
+*     E_EXIT_CAUSED_BY_CALLER           =
+*     ES_EXIT_CAUSED_BY_USER            =
+    TABLES
+      t_outtab           = it_final
+    EXCEPTIONS
+      program_error      = 1
+      OTHERS             = 2.
+
+  IF sy-subrc <> 0.
+* Implement suitable error handling here
+  ENDIF.
+*&---------------------------------------------------------------------*
+*& Form headings
+*&---------------------------------------------------------------------*
+
+FORM headings .
+  PERFORM final_headings USING 'VBELN' 'VBAK' 'VBELN'.
+  PERFORM final_headings USING 'AUDAT' 'VBAK' 'AUDAT'.
+  PERFORM final_headings USING 'VBTYP' 'VBAK' 'VBTYP'.
+  PERFORM final_headings USING 'KUNNR' 'VBAK' 'KUNNR'.
+  PERFORM final_headings USING 'WAERK' 'VBAK' 'WAERK'.
+  PERFORM final_headings USING 'POSNR' 'VBAP' 'POSNR'.
+  PERFORM final_headings USING 'MATNR' 'VBAP' 'MATNR'.
+  PERFORM final_headings USING 'KWMENG' 'VBAP' 'KWMENG'.
+  PERFORM final_headings USING 'NETWR' 'VBAP' 'NETWR'.
+  PERFORM final_headings USING 'WERKS' 'VBAP' 'WERKS'.
+  PERFORM final_headings USING 'SPRAS' 'MAKT' 'SPRAS'.
+  PERFORM final_headings USING 'MAKTX' 'MAKT' 'MAKTX'.
+  PERFORM final_headings USING 'MAKTG' 'MAKT' 'MAKTG'.
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*& Form final_headings
+*&---------------------------------------------------------------------*
+*& text
+*&---------------------------------------------------------------------*
+*&      --> P_
+*&      --> P_
+*&      --> P_
+*&---------------------------------------------------------------------*
+FORM final_headings  USING    VALUE(p_fname)
+                              VALUE(p_rtname)
+                              VALUE(p_rfname).
+  DATA : column TYPE i.
+  column = column + 1.
+  wa_fcat_final-fieldname = p_fname.
+  wa_fcat_final-col_pos = column.
+  wa_fcat_final-ref_tabname = p_rtname.
+  wa_fcat_final-ref_fieldname = p_rfname.
+  APPEND wa_fcat_final TO it_fcat_final.
+ENDFORM.
