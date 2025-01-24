@@ -1,0 +1,175 @@
+*&---------------------------------------------------------------------*
+*& Include          ZINC_ALV_DECLARATION
+*&---------------------------------------------------------------------*
+
+TABLES : vbak,vbap,makt,mara,
+         ekpo,ekko,t001.
+
+TYPE-POOLS : slis_t_fieldcat,slit_t_event, slis_t_listheader, slis_selfield.
+
+
+TYPES : BEGIN OF ty_vbak,
+          vbeln TYPE vbak-vbeln,
+          audat TYPE vbak-audat,
+          vbtyp TYPE vbak-vbtyp,
+          netwr TYPE vbak-netwr,
+          kunnr TYPE vbak-kunnr,
+          waerk TYPE vbak-waerk,
+        END OF ty_vbak,
+
+        BEGIN OF ty_vbap,
+          vbeln  TYPE vbap-vbeln,
+          posnr  TYPE vbap-posnr,
+          matnr  TYPE vbap-matnr,
+          kwmeng TYPE vbap-kwmeng,
+          netwr  TYPE vbap-netwr,
+          werks  TYPE vbap-werks,
+        END OF ty_vbap,
+
+        BEGIN OF ty_makt,
+          matnr TYPE makt-matnr,
+          spras TYPE makt-spras,
+          maktx TYPE makt-maktx,
+          maktg TYPE makt-maktg,
+        END OF ty_makt,
+
+        BEGIN OF ty_mara,
+          matnr TYPE mara-matnr,
+          mtart TYPE mara-mtart,
+          mbrsh TYPE mara-mbrsh,
+          wrkst TYPE mara-wrkst,
+          bwscl TYPE mara-bwscl,
+        END OF ty_mara,
+
+        BEGIN OF ty_ekpo,
+          ebeln TYPE ekpo-ebeln,
+          ebelp TYPE ekpo-ebelp,
+          matnr TYPE ekpo-matnr,
+          bukrs TYPE ekpo-bukrs,
+          werks TYPE ekpo-werks,
+        END OF ty_ekpo,
+
+        BEGIN OF ty_ekko,
+          ebeln TYPE ekko-ebeln,
+          bukrs TYPE ekko-bukrs,
+          statu TYPE ekko-statu,
+          pincr TYPE ekko-pincr,
+          kunnr TYPE ekko-kunnr,
+        END OF ty_ekko,
+
+        BEGIN OF ty_t001,
+          bukrs   TYPE t001-bukrs,
+          butxt   TYPE t001-butxt,
+          waers   TYPE t001-waers,
+          xtemplt TYPE t001-xtemplt,
+        END OF ty_t001,
+
+        BEGIN OF ty_kna1,
+          kunnr TYPE kna1-kunnr,
+          name1 TYPE kna1-name1,
+          ort01 TYPE kna1-ort01,
+          land1 TYPE kna1-land1,
+        END OF ty_kna1.
+
+
+" Basic Declarations
+DATA : wa_vbak        TYPE ty_vbak,
+       wa_vbap        TYPE ty_vbap,
+       wa_makt        TYPE ty_makt,
+       wa_mara        TYPE ty_mara,
+       wa_ekpo        TYPE ty_ekpo,
+       wa_ekko        TYPE ty_ekko,
+       wa_t001        TYPE ty_t001,
+       wa_kna1        TYPE ty_kna1,
+       it_vbak        TYPE TABLE OF ty_vbak,
+       it_vbap        TYPE TABLE OF ty_vbap,
+       it_makt        TYPE TABLE OF ty_makt,
+       it_mara        TYPE TABLE OF ty_mara,
+       it_ekpo        TYPE TABLE OF ty_ekpo,
+       it_ekko        TYPE TABLE OF ty_ekko,
+       it_t001        TYPE TABLE OF ty_t001,
+       it_kna1        TYPE TABLE OF ty_kna1,
+
+       " It's helpfull for data convertion to call another table
+       iv_vbeln       TYPE vbak-vbeln,
+       iv_vbeln_p     TYPE vbap-vbeln,
+       iv_ebeln       TYPE ekpo-ebeln,
+       iv_matnr       TYPE vbap-matnr,
+       iv_matnr_kt    TYPE makt-matnr,
+       iv_bukrs       TYPE ekko-bukrs,
+       iv_bukrs_01    TYPE t001-bukrs,
+       iv_knnnr       TYPE kna1-kunnr,
+
+       " Here it's can helpfull for displaying table headings
+       it_fcat_vbak   TYPE slis_t_fieldcat_alv,
+       it_fcat_vbap   TYPE slis_t_fieldcat_alv,
+       it_fcat_kna1   TYPE slis_t_fieldcat_alv,
+       it_fcat_makt   TYPE slis_t_fieldcat_alv,
+       it_fcat_mara   TYPE slis_t_fieldcat_alv,
+       it_fcat_ekpo   TYPE slis_t_fieldcat_alv,
+       it_fcat_ekko   TYPE slis_t_fieldcat_alv,
+       it_fcat_t001   TYPE slis_t_fieldcat_alv,
+       wa_fcat_vbak   LIKE LINE OF it_fcat_vbak,
+       wa_fcat_vbap   LIKE LINE OF it_fcat_vbap,
+       wa_fcat_kna1   LIKE LINE OF it_fcat_kna1,
+       wa_fcat_makt   LIKE LINE OF it_fcat_makt,
+       wa_fcat_mara   LIKE LINE OF it_fcat_mara,
+       wa_fcat_ekpo   LIKE LINE OF it_fcat_ekpo,
+       wa_fcat_ekko   LIKE LINE OF it_fcat_ekko,
+       wa_fcat_t001   LIKE LINE OF it_fcat_t001,
+
+       " This is helpinf to events declaration
+       it_events_vbak TYPE slis_t_event,
+       it_events_vbap TYPE slis_t_event,
+       it_events_kna1 TYPE slis_t_event,
+       it_events_makt TYPE slis_t_event,
+       it_events_mara TYPE slis_t_event,
+       it_events_ekpo TYPE slis_t_event,
+       it_events_ekko TYPE slis_t_event,
+       it_events_t001 TYPE slis_t_event,
+       wa_events_vbak LIKE LINE OF it_events_vbak,
+       wa_events_vbap LIKE LINE OF it_events_vbap,
+       wa_events_kna1 LIKE LINE OF it_events_kna1,
+       wa_events_makt LIKE LINE OF it_events_makt,
+       wa_events_mara LIKE LINE OF it_events_mara,
+       wa_events_ekpo LIKE LINE OF it_events_ekpo,
+       wa_events_ekko LIKE LINE OF it_events_ekko,
+       wa_events_t001 LIKE LINE OF it_events_t001,
+
+       " It's can helpfull to table headlines
+       it_header_vbak TYPE slis_t_listheader,
+       it_header_vbap TYPE slis_t_listheader,
+       it_header_kna1 TYPE slis_t_listheader,
+       it_header_makt TYPE slis_t_listheader,
+       it_header_mara TYPE slis_t_listheader,
+       it_header_ekpo TYPE slis_t_listheader,
+       it_header_ekko TYPE slis_t_listheader,
+       it_header_t001 TYPE slis_t_listheader,
+       wa_header_vbak LIKE LINE OF it_header_vbak,
+       wa_header_vbap LIKE LINE OF it_header_vbap,
+       wa_header_kna1 LIKE LINE OF it_header_kna1,
+       wa_header_makt LIKE LINE OF it_header_makt,
+       wa_header_mara LIKE LINE OF it_header_mara,
+       wa_header_ekpo LIKE LINE OF it_header_ekpo,
+       wa_header_ekko LIKE LINE OF it_header_ekko,
+       wa_header_t001 LIKE LINE OF it_header_t001,
+
+       " In this declaration usefull to help user-comments
+       uc_vbak        LIKE sy-ucomm,
+       uc_vbap        LIKE sy-ucomm,
+       uc_kna1        LIKE sy-ucomm,
+       uc_mara        LIKE sy-ucomm,
+       uc_makt        LIKE sy-ucomm,
+       uc_ekpo        LIKE sy-ucomm,
+       uc_ekko        LIKE sy-ucomm,
+       uc_t001        LIKE sy-ucomm.
+
+" Thisalso declaration usefull to help user-comments additionaly it's contain datas.
+*DATA :wa_uc_vbak TYPE slis_selfield.
+*DATA :wa_uc_vbap TYPE slis_selfield.
+*DATA :wa_uc_kna1 TYPE slis_selfield.
+*DATA :wa_uc_mara TYPE slis_selfield.
+*DATA :wa_uc_makt TYPE slis_selfield.
+*DATA :wa_uc_ekpo TYPE slis_selfield.
+*DATA :wa_uc_ekko TYPE slis_selfield.
+*DATA :wa_uc_t001 TYPE slis_selfield.
