@@ -1,0 +1,40 @@
+1) Report event. 
+	• Classical reports, 
+	• Intractive reports, 
+	• ALV reports. 
+	
+° Classical reports. 
+	• Initialization, 
+	• At Selection-screen / on / output
+	• Start-of-selection, 
+	• End-of-selection, 
+	• Top-of-page, 
+	• End-of-page. 
+° Interactive reports. 
+	• At Line-selection,   " Screen basic, screen 1 like that. 
+	• At selection-screen output.  "Means input screen page. 
+	• Get cursor, 
+	• Set parameter id,
+	• Set PF-status, 
+	• Modulation techniques. 
+	    1). Subroutine, 
+	    2). Includes, 
+	    3). Function module. 
+
+° ALV Reports. 
+	• Events, 
+	• Functions, 
+	• Type-groups. 
+° Events., 
+° Type-groups, 
+	• Slis_t_fieldcat_alv, 
+	• Slis_t_event, 
+	• Slis_t_listheader, 
+	• Slis_selfield, 
+° Functions
+	• Reuse_alv_list/Grid_display, ”here can display the final table. 
+	• Reuse_layout_alv, " Here can altration the display. 
+	• Convertion_exit_alpha_input,  "Here can convert without zeros/content in front of values / back of values to with that value. 
+	• Reuse_alv_commentary_write, " Here can declare the header block of final table view. 
+	• Gui_download, " Download datas., 
+	• Reuse_alv_block_list_init/Append/Display, 
